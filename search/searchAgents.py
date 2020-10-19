@@ -295,14 +295,23 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startingPosition
+#        util.raiseNotDefined()
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        """explain:
+        when pacman reach the corner, store that corner to "state"
+        if all four corners are visited, then the state should contain self.corners
+        "state" looks like:(  (x, y, (1,1),(1,6) )
+        "self.corners" looks like: ((1,1), (1,6), (6,1), (6,6)) 
+        """
+        return set(self.corners).issubset(state)        
+#        util.raiseNotDefined()
 
     def getSuccessors(self, state):
         """
@@ -325,6 +334,22 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            x,y = state[:2]
+            # the first two elements in state are the current state. 
+            # the rare state[2:] are visited corner tuple:(),(),...
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            next_pos = (nextx, nexty)
+            # next_pos is the position of possible successor
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                if (next_pos in self.corners) and (next_pos not in state):
+                    # get to the unvisited corner
+                    tmp = (next_pos+state[2:]+(next_pos,), action, 1)
+                    successors.append( (next_pos+state[2:]+(next_pos,), action, 1) )
+                else:
+                    tmp = (next_pos+state[2:], action, 1)
+                    successors.append((next_pos+state[2:], action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors

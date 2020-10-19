@@ -124,7 +124,7 @@ def breadthFirstSearch(problem):
                     fringe.push(tmp)
             visited.append(node["state"])
 
-    util.raiseNotDefined()
+    #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
