@@ -96,7 +96,7 @@ def depthFirstSearch(problem):
         node = fringe.pop()
         if problem.isGoalState(node["state"]):
             return node["actions"]
-        if node["state"] not in visited:
+        if node["state"] not in visited: #only browser the unvisited node, otherwise infinite loop
             for successor in problem.getSuccessors(node["state"]):
                 if successor[0] not in visited:
                     tmp = {"state": successor[0], "actions":node["actions"]+[successor[1]], "cost":node["cost"]+successor[2]}
@@ -108,11 +108,43 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    fringe = util.Queue() # the only difference is fringe is implemented by queue
+    node = {"state": problem.getStartState(), "actions":[], "cost":0}
+    fringe.push(node)
+    visited = []
+
+    while not fringe.isEmpty():
+        node = fringe.pop()
+        if problem.isGoalState(node["state"]):
+            return node["actions"]
+        if node["state"] not in visited: #only browser the unvisited node, otherwise infinite loop
+            for successor in problem.getSuccessors(node["state"]):
+                if successor[0] not in visited:
+                    tmp = {"state": successor[0], "actions":node["actions"]+[successor[1]], "cost":node["cost"]+successor[2]}
+                    fringe.push(tmp)
+            visited.append(node["state"])
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    fringe = util.PriorityQueue() # use priority queue to implement, and change "push" to "update" with cost
+    node = {"state": problem.getStartState(), "actions":[], "cost":0}
+    fringe.update(node, node["cost"])
+    visited = []
+
+    while not fringe.isEmpty():
+        node = fringe.pop()
+        if problem.isGoalState(node["state"]):
+            return node["actions"]
+        if node["state"] not in visited: #only browser the unvisited node, otherwise infinite loop
+            for successor in problem.getSuccessors(node["state"]):
+                if successor[0] not in visited:
+                    tmp = {"state": successor[0], "actions":node["actions"]+[successor[1]], "cost":node["cost"]+successor[2]}
+                    fringe.update(tmp, tmp["cost"])
+            visited.append(node["state"])
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -125,6 +157,26 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    fringe = util.PriorityQueue() 
+    # use priority queue to implement, 
+    # change "push" to "update" with heuristic cost 
+    node = {"state": problem.getStartState(), "actions":[], "cost":0}
+    heur_cost = heuristic(node["state"], problem)
+    fringe.update(node, node["cost"]+heur_cost)
+    visited = []
+
+    while not fringe.isEmpty():
+        node = fringe.pop()
+        if problem.isGoalState(node["state"]):
+            return node["actions"]
+        if node["state"] not in visited: #only browser the unvisited node, otherwise infinite loop
+            for successor in problem.getSuccessors(node["state"]):
+                if successor[0] not in visited:
+                    tmp = {"state": successor[0], "actions":node["actions"]+[successor[1]], "cost":node["cost"]+successor[2]}
+                    t_heur_cost = heuristic(tmp["state"], problem)
+                    fringe.update(tmp, tmp["cost"]+t_heur_cost)
+            visited.append(node["state"])
+
     util.raiseNotDefined()
 
 
