@@ -87,6 +87,22 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
+    fringe = util.Stack()
+    node = {"state": problem.getStartState(), "actions":[], "cost":0}
+    fringe.push(node)
+    visited = []
+
+    while not fringe.isEmpty():
+        node = fringe.pop()
+        if problem.isGoalState(node["state"]):
+            return node["actions"]
+        if node["state"] not in visited:
+            for successor in problem.getSuccessors(node["state"]):
+                if successor[0] not in visited:
+                    tmp = {"state": successor[0], "actions":node["actions"]+[successor[1]], "cost":node["cost"]+successor[2]}
+                    fringe.push(tmp)
+            visited.append(node["state"])
+            
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
