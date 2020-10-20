@@ -308,7 +308,8 @@ class CornersProblem(search.SearchProblem):
         when pacman reach the corner, store that corner to "state"
         if all four corners are visited, then the state should contain self.corners
         "state" looks like:(  (x, y, (1,1),(1,6) )
-        "self.corners" looks like: ((1,1), (1,6), (6,1), (6,6)) 
+        "self.corners" looks like: ((1,1), (1,6), (6,1), (6,6))
+        Therefore, use set() to separate and compare two sets, otherwise the isGoalState won't return True. 
         """
         return set(self.corners).issubset(state)        
 #        util.raiseNotDefined()
@@ -385,7 +386,79 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    heuristic_accum = 0
+    food_to_eat = {}
+    # food_to_eat is a dictionary
+
+    if isint(state[0] == 1:
+        # state only have current state
+        x,y = state
+        for i in range(len(corners)):
+            food_to_eat[corners[i]] = 0
+    else:    
+        x,y = state[0]
+        for i in range(len(state[1])):
+            if state[1][i]==0:
+                food_to_eat[corners[i]] = 0
+                # record uneaten dots
+
+    while(len(food_to_eat)):
+        for uneaten in food_to_eat.keys():
+            # calculate the manhattan distance from the uneaten dots to current state
+            food_to_eat[uneaten] = abs(x-uneaten[0])+abs(y-uneaten[1])
+        x,y = min(food_to_eat, key=lambda key:food_to_eat[key])
+        #find the minimum manhattan distance(shortest path) according to all uneaten dots
+        heuristic_accum += food_to_eat[(x,y)]
+        del food_to_eat[(x,y)]
+    
+    return heuristic_accum
+#    return 0 # Default to trivial solution
+
+def cornersHeuristic_ERR2(state, problem):
+  """
+  A heuristic for the CornersProblem that you defined.
+  
+    state:   The current search state 
+             (a data structure you chose in your search problem)
+    
+    problem: The CornersProblem instance for this layout.  
+    
+  This function should always return a number that is a lower bound
+  on the shortest path from the state to a goal of the problem; i.e.
+  it should be admissible (as well as consistent).
+  """
+  corners = problem.corners # These are the corner coordinates
+  walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+  
+  "*** YOUR CODE HERE ***"
+  heuristic = 0
+  cornersLeft = state[1][:]  
+  referencePoint = state[0]
+  
+  while len(cornersLeft) > 0:
+  	closestCorner = closestPoint(referencePoint, cornersLeft)
+  	heuristic += manhattanDistance(referencePoint, closestCorner)
+  	referencePoint = closestCorner
+  	cornersLeft.remove(closestCorner)
+  
+  return heuristic
+  
+def closestPoint (fromPoint, candidatesList):
+  if len(candidatesList) == 0:
+  	return None
+
+  closestCorner = candidatesList[0]
+  closestCost = manhattanDistance(fromPoint, closestCorner)
+  for candidate in candidatesList[1:]:
+  	thisCost = manhattanDistance(fromPoint, candidate)
+  	if closestCost > thisCost:
+  		closestCost = thisCost
+  		closestCorner = candidate
+  
+  return closestCorner
+  
+def manhattanDistance (pointA, pointB):
+	return abs(pointA[0] - pointB[0]) + abs(pointA[1] - pointB[1])
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
