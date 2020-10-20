@@ -408,52 +408,6 @@ def cornersHeuristic(state, problem):
     return heuristic_accum
 #    return 0 # Default to trivial solution
 
-def cornersHeuristic_ERR2(state, problem):
-  """
-  A heuristic for the CornersProblem that you defined.
-  
-    state:   The current search state 
-             (a data structure you chose in your search problem)
-    
-    problem: The CornersProblem instance for this layout.  
-    
-  This function should always return a number that is a lower bound
-  on the shortest path from the state to a goal of the problem; i.e.
-  it should be admissible (as well as consistent).
-  """
-  corners = problem.corners # These are the corner coordinates
-  walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-  
-  "*** YOUR CODE HERE ***"
-  heuristic = 0
-  cornersLeft = state[1][:]  
-  referencePoint = state[0]
-  
-  while len(cornersLeft) > 0:
-  	closestCorner = closestPoint(referencePoint, cornersLeft)
-  	heuristic += manhattanDistance(referencePoint, closestCorner)
-  	referencePoint = closestCorner
-  	cornersLeft.remove(closestCorner)
-  
-  return heuristic
-  
-def closestPoint (fromPoint, candidatesList):
-  if len(candidatesList) == 0:
-  	return None
-
-  closestCorner = candidatesList[0]
-  closestCost = manhattanDistance(fromPoint, closestCorner)
-  for candidate in candidatesList[1:]:
-  	thisCost = manhattanDistance(fromPoint, candidate)
-  	if closestCost > thisCost:
-  		closestCost = thisCost
-  		closestCorner = candidate
-  
-  return closestCorner
-  
-def manhattanDistance (pointA, pointB):
-	return abs(pointA[0] - pointB[0]) + abs(pointA[1] - pointB[1])
-
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
