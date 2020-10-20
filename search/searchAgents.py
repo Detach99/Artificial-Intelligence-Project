@@ -391,7 +391,7 @@ def cornersHeuristic(state, problem):
     # food_to_eat is a dictionary
 
     if isint(state[0] == 1:
-        # state only have current state
+        # state only have current state,and has not visited any corners.
         x,y = state
         for i in range(len(corners)):
             food_to_eat[corners[i]] = 0
