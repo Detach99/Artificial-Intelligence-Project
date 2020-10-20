@@ -389,18 +389,12 @@ def cornersHeuristic(state, problem):
     heuristic_accum = 0
     food_to_eat = {}
     # food_to_eat is a dictionary
-
-    if isint(state[0] == 1:
-        # state only have current state,and has not visited any corners.
-        x,y = state
-        for i in range(len(corners)):
+    # state: (x,y, CORNERS_VISITED)
+    x,y = state[:2]
+    for i in range(len(state[2:])):
+        if not state[i]:
             food_to_eat[corners[i]] = 0
-    else:    
-        x,y = state[0]
-        for i in range(len(state[1])):
-            if state[1][i]==0:
-                food_to_eat[corners[i]] = 0
-                # record uneaten dots
+            # record uneaten dots
 
     while(len(food_to_eat)):
         for uneaten in food_to_eat.keys():
