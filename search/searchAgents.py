@@ -507,7 +507,26 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    # print(state)
+    # state: ( (x, y), <FOOD_GRID> )
+    
+    heuristic_accum = 0
+    food_to_eat = {}
+    # food_to_eat is a dictionary
+    for food in foodGrid.asList():
+        food_to_eat[food] = 0
+#    print(food_to_eat)      
+
+    if len(food_to_eat):
+        for food in food_to_eat.keys():
+            food_to_eat[food] = mazeDistance(position, food, problem.startingGameState)
+        pos = max(food_to_eat, key= lambda key: food_to_eat[key])
+        # return the position of the farest food, 
+        # therefore the agent could eat possibly more food along the path
+        return food_to_eat[pos]            
+    else:
+        return 0
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -575,3 +594,21 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+
+def mazeDistance(point1, point2, gameState):
+    """
+    Returns the maze distance between any two points, using the search functions
+    you have already built. The gameState can be any game state -- Pacman's
+    position in that state is ignored.
+
+    Example usage: mazeDistance( (2,4), (5,6), gameState)
+
+    This might be a useful helper function for your ApproximateSearchAgent.
+    """
+    x1, y1 = point1
+    x2, y2 = point2
+    walls = gameState.getWalls()
+    assert not walls[x1][y1], 'point1 is a wall: ' + str(point1)
+    assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
+    prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
+    return len(search.bfs(prob))
