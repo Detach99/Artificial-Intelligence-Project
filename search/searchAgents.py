@@ -288,6 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self._visited_corners = []
 
     def getStartState(self):
         """
@@ -347,6 +348,7 @@ class CornersProblem(search.SearchProblem):
                 if (next_pos in self.corners) and (next_pos not in state):
                     # get to the unvisited corner
                     tmp = (next_pos+state[2:]+(next_pos,), action, 1)
+#                    self._visited_corners.append(next_pos+state[2:])
                     successors.append( (next_pos+state[2:]+(next_pos,), action, 1) )
                 else:
                     tmp = (next_pos+state[2:], action, 1)
@@ -389,13 +391,17 @@ def cornersHeuristic(state, problem):
     heuristic_accum = 0
     food_to_eat = {}
     # food_to_eat is a dictionary
+    # print(state)
     # state: (x,y, CORNERS_VISITED)
-    x,y = state[:2]
-    for i in range(len(state[2:])):
-        if not state[i]:
-            food_to_eat[corners[i]] = 0
-            # record uneaten dots
+    for corner in corners:
+        food_to_eat[corner]=0
 
+    x, y = state[:2]
+    corner_visited = state[2:]
+    for corner in corner_visited:
+        del food_to_eat[corner]    
+#        food_to_eat[corner]=99999
+       
     while(len(food_to_eat)):
         for uneaten in food_to_eat.keys():
             # calculate the manhattan distance from the uneaten dots to current state
@@ -404,7 +410,8 @@ def cornersHeuristic(state, problem):
         #find the minimum manhattan distance(shortest path) according to all uneaten dots
         heuristic_accum += food_to_eat[(x,y)]
         del food_to_eat[(x,y)]
-    
+
+    print(heuristic_accum)
     return heuristic_accum
 #    return 0 # Default to trivial solution
 
