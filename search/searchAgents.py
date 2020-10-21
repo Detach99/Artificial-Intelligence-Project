@@ -347,11 +347,8 @@ class CornersProblem(search.SearchProblem):
             if not hitsWall:
                 if (next_pos in self.corners) and (next_pos not in state):
                     # get to the unvisited corner
-                    tmp = (next_pos+state[2:]+(next_pos,), action, 1)
-#                    self._visited_corners.append(next_pos+state[2:])
                     successors.append( (next_pos+state[2:]+(next_pos,), action, 1) )
                 else:
-                    tmp = (next_pos+state[2:], action, 1)
                     successors.append((next_pos+state[2:], action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -385,7 +382,7 @@ def cornersHeuristic(state, problem):
     admissible (as well as consistent).
     """
     corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+#    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
     heuristic_accum = 0
@@ -509,8 +506,6 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     # print(state)
     # state: ( (x, y), <FOOD_GRID> )
-    
-    heuristic_accum = 0
     food_to_eat = {}
     # food_to_eat is a dictionary
     for food in foodGrid.asList():
@@ -558,7 +553,6 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         return search.ucs(AnyFoodSearchProblem(gameState))
-        util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -603,8 +597,5 @@ def mazeDistance(point1, point2, gameState):
     the search functions are implemented in search.py
     Example usage: mazeDistance( (1,1), (5,6), gameState)
     """
-    x1, y1 = point1
-    x2, y2 = point2
-    walls = gameState.getWalls()
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
     return len(search.bfs(prob))
