@@ -1,17 +1,16 @@
-# AI-pacman
+# AI-Project
 
 #### 介绍
 
 Project of DATA130008 Introduction to Artificial Intelligence, School of Data Science, Fudan.
 
 Originally created by cs188, UC Berkely.
-
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
+#### Project-1 Pacman
+*See Project-1.pdf*
+Implemented:
+1) DFS/BFS/UCS/A*
+2) Find all corners 
+3) Corner Heuristics
+4) Food Heuristics
+5) Suboptimal Search
+#### Project-2 N-Queen
