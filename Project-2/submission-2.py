@@ -15,10 +15,14 @@ def create_n_queens_csp(n=8):
         such that it can be solved by a weighted CSP solver
     """
     csp = CSP()
-    # TODO: Problem b
-    # TODO: BEGIN_YOUR_CODE
-    raise NotImplementedError
-    # TODO: END_YOUR_CODE
+    boardSize = range(n)
+    queens = ['queen%d'%i for i in range(1, n+1)]
+    for var in queens:
+        csp.add_variable(var, boardSize)
+    for firstID in range(n):
+        for secondID in range(firstID+1, n):
+            csp.add_binary_factor(queens[firstID], queens[secondID], lambda rcolval1, rcolval2: rcolval1 != rcolval2)
+            csp.add_binary_factor(queens[firstID], queens[secondID], lambda rcolval1, rcolval2: abs(rcolval1-rcolval2) != secondID-firstID)
     return csp
 
 
@@ -141,17 +145,25 @@ class BacktrackingSearch:
         ordered_values = self.domains[var]
 
         if not self.ac3:
-            # TODO: Problem a
-            # TODO: BEGIN_YOUR_CODE
-            raise NotImplementedError
-            # TODO: END_YOUR_CODE
+            for val in ordered_values:
+                Weight = self.check_factors(assignment, var, val)
+                if Weight:
+                    assignment[var]=val
+                    self.backtrack(assignment)
+                del assignment[var]
 
         else:
-            # TODO: Problem d
-            # TODO: BEGIN_YOUR_CODE
-            raise NotImplementedError
-            # TODO: END_YOUR_CODE
-
+            for val in ordered_values:
+                Weight = self.check_factors(assignment, var, val)
+                if Weight:
+                    assignment[var]=val
+                    localCopy = copy.deepcopy(self.domains)
+                    self.domains[var]= [val]
+                    self.arc_consistency_check(var)
+                    self.backtrack(assignment)                    
+                    self.domains=localCopy
+                    del assignment[var]
+                                                
 
     def get_unassigned_variable(self, assignment):
         """Get a currently unassigned variable for a partial assignment.
@@ -177,10 +189,15 @@ class BacktrackingSearch:
                 if var not in assignment:
                     return var
         else:
-            # TODO: Problem c
-            # TODO: BEGIN_YOUR_CODE
-            raise NotImplementedError
-            # TODO: END_YOUR_CODE
+            min_num_consistent_val = float('inf')
+            var_mcv = self.csp.variables[0]
+            for var in self.csp.variables:
+                if var not in assignment:
+                    num_consistent_val = sum(self.check_factors(assignment, var, x) for x in self.domains[var])
+                    if num_consistent_val < min_num_consistent_val:
+                        min_num_consistent_val = num_consistent_val
+                        var_mcv = var
+            return var_mcv
 
     def arc_consistency_check(self, var):
         """AC-3 algorithm.
@@ -203,7 +220,39 @@ class BacktrackingSearch:
         Returns
             boolean: succeed or not
         """
-        # TODO: Problem d
-        # TODO: BEGIN_YOUR_CODE
-        raise NotImplementedError
-        # TODO: END_YOUR_CODE
+        queue = [var]
+        while len(queue):
+            current_var = queue.pop(0)
+
+            for neighbor_var in self.csp.get_neighbor_vars(current_var):
+                # init
+                neighborDomain = []
+                domainChangeFlag = False
+
+                # check the values for both uniary and binary factor
+                for neighbor_val in self.domains[neighbor_var]:
+                    uniaryFlag = False
+                    binaryFlag = False
+
+                    for current_val in self.domains[current_var]:
+                        if self.csp.binary_factors[current_var][neighbor_var][current_val][neighbor_val] != 0:
+                            binaryFlag = True
+                            break
+                    
+                    if self.csp.unary_factors[neighbor_var] != None: 
+                        if self.csp.unary_factors[neighbor_var][neighbor_val] != 0:
+                            uniaryFlag = True
+                    else:
+                        uniaryFlag = True
+
+                    if uniaryFlag and binaryFlag:
+                        neighborDomain.append(neighbor_val)
+                    else:
+                        domainChangeFlag = True
+                
+                if domainChangeFlag:
+                    #if neighborDomain == []:    return False
+                    self.domains[neighbor_var] = neighborDomain
+                    queue.append(neighbor_var)
+         
+
