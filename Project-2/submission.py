@@ -144,6 +144,7 @@ class BacktrackingSearch:
         ordered_values = self.domains[var]
 
         if not self.ac3:
+            # problem a
             for val in ordered_values:
                 weight = self.check_factors(assignment, var, val)
                 if weight:
@@ -151,11 +152,21 @@ class BacktrackingSearch:
                     self.backtrack(assignment)
                     del assignment[var]
         else:
-            # TODO: Problem d
-            # TODO: BEGIN_YOUR_CODE
-            raise NotImplementedError
-            # TODO: END_YOUR_CODE
+            # problem d
+            for val in ordered_values:
+                weight = self.check_factors(assignment, var, val)
+                if weight:
+                    assignment[var] = val
+                    localCopy = copy.deepcopy(self.domains)
+                    self.domains[var] = [val]
 
+                    succeed = self.arc_consistency_check(var)
+                    if succeed:
+                        self.backtrack(assignment)
+
+                    # restore domains
+                    self.domains = localCopy
+                    del assignment[var]
 
     def get_unassigned_variable(self, assignment):
         """Get a currently unassigned variable for a partial assignment.
@@ -213,4 +224,35 @@ class BacktrackingSearch:
         Returns
             boolean: succeed or not
         """
+        queue = [var]
+        while len(queue):
+            current_var = queue.pop(0)
+            for neighbor_var in self.csp.get_neighbor_vars(current_var):
+                neighbor_domain = []
+                domain_change = False
+                for neighbor_val in self.domains[neighbor_var]:
+                    uniary_change = False
+                    binary_change = False
+
+                    for current_val in self.domains[current_var]:
+                        if self.csp.binary_factors[current_var][neighbor_var][current_val][neighbor_val] != 0:
+                            binary_change = True
+                            break
+                    # check for uniary factor and if unary factor exists for neighbor variables
+                    if self.csp.unary_factors[neighbor_var] != None:
+                        if self.csp.unary_factors[neighbor_var][neighbor_val] != 0:
+                            uniary_change = True
+                    else:
+                        uniary_change = True
+                    
+                    if uniary_change and binary_change:
+                        neighbor_domain.append(neighbor_val)
+                    else:
+                        domain_change = True      
+                    
+                    if domain_change:
+                        self.domains[neighbor_var] = neighbor_domain
+                        queue.append(neighbor_var)                
+            if self.domains[neighbor_var] == []: return False
         
+        return True    
