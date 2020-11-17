@@ -91,6 +91,7 @@ class Grader:
             print('----- START PART %s: %s' % (part.name, part.description))
             self.current_part = part
             start_time = datetime.datetime.now()
+            """"""
             try:
                 TimeoutFunction(part.grade_function, part.max_seconds)()
             except KeyboardInterrupt:
