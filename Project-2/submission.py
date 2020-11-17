@@ -15,10 +15,8 @@ def create_n_queens_csp(n=8):
         such that it can be solved by a weighted CSP solver
     """
     csp = CSP()
-    # TODO: Problem b
-    # TODO: BEGIN_YOUR_CODE
-    raise NotImplementedError
-    # TODO: END_YOUR_CODE
+    boardSize = range(n)
+    queens = 
     return csp
 
 
@@ -141,17 +139,25 @@ class BacktrackingSearch:
         ordered_values = self.domains[var]
 
         if not self.ac3:
-            # TODO: Problem a
-            # TODO: BEGIN_YOUR_CODE
-            raise NotImplementedError
-            # TODO: END_YOUR_CODE
+            for val in ordered_values:
+                deltaWeight = self.check_factors(assignment, var, val)
+                if deltaWeight>0:
+                    assignment[var]=val
+                    self.backtrack(assignment,numAssigned+1,weight*deltaWeight)
+                    del assignment[var]
 
         else:
-            # TODO: Problem d
-            # TODO: BEGIN_YOUR_CODE
-            raise NotImplementedError
-            # TODO: END_YOUR_CODE
+            for val in ordered_values:
+                deltaWeight = self.check_factors(assignment, var, val)
+                if deltaWeight >0:
+                    assignment[var]=val
+                    localCopy = copy.deepcopy(self.domains)
+                    self.domains[var]= [val]
 
+                    self.arc_consistency_check(var)
+                    self.backtrack(assignment, numAssigned+1, weight*deltaWeight)
+                    self.domains=localCopy
+                    del assignment[var]
 
     def get_unassigned_variable(self, assignment):
         """Get a currently unassigned variable for a partial assignment.
