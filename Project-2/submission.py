@@ -15,12 +15,15 @@ def create_n_queens_csp(n=8):
         such that it can be solved by a weighted CSP solver
     """
     csp = CSP()
-    # TODO: Problem b
-    # TODO: BEGIN_YOUR_CODE
-    raise NotImplementedError
-    # TODO: END_YOUR_CODE
+    board_size = range(n)
+    queens = ["queen%d" %i for i in range(1, n+1)]
+    for var in queens:
+        csp.add_variable(var, board_size)
+    for id1 in range(n):
+        for id2 in range(id1+1, n):
+            csp.add_binary_factor(queens[id1], queens[id2], lambda rcolv1, rcolv2: rcolv1 != rcolv2)
+            csp.add_binary_factor(queens[id1], queens[id2], lambda rcolv1, rcolv2: abs(rcolv1- rcolv2) != abs(id1- id2))
     return csp
-
 
 class BacktrackingSearch:
     """A backtracking algorithm that solves CSP.
@@ -141,11 +144,12 @@ class BacktrackingSearch:
         ordered_values = self.domains[var]
 
         if not self.ac3:
-            # TODO: Problem a
-            # TODO: BEGIN_YOUR_CODE
-            raise NotImplementedError
-            # TODO: END_YOUR_CODE
-
+            for val in ordered_values:
+                weight = self.check_factors(assignment, var, val)
+                if weight:
+                    assignment[var] = val
+                    self.backtrack(assignment)
+                    del assignment[var]
         else:
             # TODO: Problem d
             # TODO: BEGIN_YOUR_CODE
@@ -177,10 +181,16 @@ class BacktrackingSearch:
                 if var not in assignment:
                     return var
         else:
-            # TODO: Problem c
-            # TODO: BEGIN_YOUR_CODE
-            raise NotImplementedError
-            # TODO: END_YOUR_CODE
+            min_num_consistent_val = float('inf')
+            var_mcv = self.csp.variables[0]
+
+            for var in self.csp.variables:
+                if var not in assignment:
+                    num_consistent_val = sum(self.check_factors(assignment, var, x) for x in self.domains[var])
+                    if num_consistent_val < min_num_consistent_val:
+                        min_num_consistent_val = num_consistent_val
+                        var_mcv = var
+            return var_mcv
 
     def arc_consistency_check(self, var):
         """AC-3 algorithm.
@@ -203,7 +213,4 @@ class BacktrackingSearch:
         Returns
             boolean: succeed or not
         """
-        # TODO: Problem d
-        # TODO: BEGIN_YOUR_CODE
-        raise NotImplementedError
-        # TODO: END_YOUR_CODE
+        
